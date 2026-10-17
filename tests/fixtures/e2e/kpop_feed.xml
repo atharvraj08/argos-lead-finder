@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>E2E K-pop News</title><link>https://news.example.com/kpop/</link><description>fixture</description>
+<item>
+  <title>Stray Kids announce dominATE World Tour U.S. dates</title>
+  <link>https://news.example.com/kpop/stray-kids-tour</link>
+  <guid>e2e-kpop-1</guid>
+  <pubDate>Wed, 14 Oct 2026 12:00:00 +0000</pubDate>
+  <description>Stray Kids will play Los Angeles (Crypto.com Arena, Dec 5) and Newark (Prudential Center, Dec 9), plus Toronto. Tickets on sale Oct 25.</description>
+</item>
+<item>
+  <title>ATEEZ fan meeting heads to Chicago</title>
+  <link>https://news.example.com/kpop/ateez-fanmeeting</link>
+  <guid>e2e-kpop-2</guid>
+  <pubDate>Thu, 15 Oct 2026 12:00:00 +0000</pubDate>
+  <description>ATEEZ fan meeting in Chicago on Nov 20 at the Rosemont Theatre. Tickets via Etix from Oct 30.</description>
+</item>
+</channel></rss>

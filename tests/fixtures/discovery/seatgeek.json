@@ -1,0 +1,28 @@
+{
+ "events": [
+  {"id": 7001001, "type": "concert", "title": "tripleS", "short_title": "tripleS",
+   "datetime_local": "2026-11-24T20:00:00", "datetime_utc": "2026-11-25T04:00:00", "datetime_tbd": false,
+   "announce_date": "2026-09-20T00:00:00", "created_at": "2026-09-20T12:00:00",
+   "url": "https://seatgeek.com/triples-tickets/los-angeles-california-the-wiltern-2026-11-24-8-pm/concert/7001001",
+   "venue": {"name": "The Wiltern", "city": "Los Angeles", "state": "CA", "country": "US", "display_location": "Los Angeles, CA"},
+   "performers": [{"name": "tripleS", "primary": true, "genres": [{"name": "K-Pop", "slug": "k-pop"}]}],
+   "taxonomies": [{"name": "concert"}]},
+  {"id": 7001002, "type": "concert", "title": "KISS OF LIFE - Kiss Road Tour", "short_title": "KISS OF LIFE",
+   "datetime_local": "2026-12-03T19:30:00", "datetime_tbd": false,
+   "url": "https://seatgeek.com/kiss-of-life-tickets/new-york-new-york-hammerstein-ballroom-2026-12-03/concert/7001002",
+   "venue": {"name": "Hammerstein Ballroom", "city": "New York", "state": "NY", "country": "US"},
+   "performers": [{"name": "KISS OF LIFE", "primary": true, "genres": [{"name": "Pop", "slug": "pop"}]}],
+   "taxonomies": [{"name": "concert"}]},
+  {"id": 7001003, "type": "concert", "title": "Kiss Tribute Night", "short_title": "Kiss Tribute",
+   "datetime_local": "2026-11-30T20:00:00", "datetime_tbd": false,
+   "url": "https://seatgeek.com/kiss-tribute-tickets/concert/7001003",
+   "venue": {"name": "The Roxy", "city": "Los Angeles", "state": "CA", "country": "US"},
+   "performers": [{"name": "Kiss Tribute", "primary": true, "genres": [{"name": "Rock", "slug": "rock"}]}],
+   "taxonomies": [{"name": "concert"}]},
+  {"id": 7001004, "type": "concert", "title": "tripleS (Toronto)", "datetime_local": "2026-11-11T20:00:00",
+   "url": "https://seatgeek.com/triples-tickets/toronto/concert/7001004",
+   "venue": {"name": "Massey Hall", "city": "Toronto", "state": "ON", "country": "Canada"},
+   "performers": [{"name": "tripleS", "primary": true, "genres": [{"name": "K-Pop", "slug": "k-pop"}]}]}
+ ],
+ "meta": {"total": 4, "page": 1, "per_page": 100}
+}

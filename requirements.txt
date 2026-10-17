@@ -1,0 +1,9 @@
+anthropic>=1.15,<2
+pydantic>=2.10,<3
+requests>=2.32,<3
+feedparser>=6.0,<7
+PyYAML>=6.0,<7
+gspread>=6.1,<7
+google-auth>=2.30,<3
+beautifulsoup4>=4.12,<5
+python-dateutil>=2.9,<3

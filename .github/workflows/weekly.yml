@@ -1,0 +1,121 @@
+name: Weekly lead run
+
+# Monday 8:00 AM America/New_York. Cron is UTC-only, so both candidate UTC
+# times are scheduled and the gate job lets through only the one that matches
+# the current New York UTC offset (EDT = 12:00 UTC, EST = 13:00 UTC).
+on:
+  schedule:
+    - cron: "0 12 * * 1" # 08:00 EDT (summer)
+    - cron: "0 13 * * 1" # 08:00 EST (winter)
+  workflow_dispatch:
+    inputs:
+      segment:
+        description: "Only run this segment slug (blank = all segments)"
+        type: string
+        required: false
+        default: ""
+      dry_run:
+        description: "Dry run (no Sheet writes, no email)"
+        type: boolean
+        default: false
+      send_test_email:
+        description: "Send a test email"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# Shared with collect.yml so the weekly and daily runs never overlap or race
+# each other committing data/argos.db.
+concurrency:
+  group: argos-db
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - name: Check it is 8 AM in New York
+        id: check
+        env:
+          EVENT: ${{ github.event_name }}
+          CRON: ${{ github.event.schedule }}
+        run: |
+          if [ "$EVENT" != "schedule" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          # Match on which cron fired rather than the wall clock, so a
+          # delayed scheduled start (common on GitHub) still runs once.
+          offset=$(TZ=America/New_York date +%z)
+          echo "Cron '$CRON', New York offset $offset, NY hour $(TZ=America/New_York date +%H)"
+          if { [ "$CRON" = "0 12 * * 1" ] && [ "$offset" = "-0400" ]; } ||
+             { [ "$CRON" = "0 13 * * 1" ] && [ "$offset" = "-0500" ]; }; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Not 8 AM in New York for this trigger; skipping."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  run:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      SEATGEEK_CLIENT_ID: ${{ secrets.SEATGEEK_CLIENT_ID }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+      GMAIL_SENDER: ${{ secrets.GMAIL_SENDER }}
+      GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_FROM: ${{ secrets.RESEND_FROM }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run lead finder
+        env:
+          SEGMENT: ${{ inputs.segment }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          SEND_TEST_EMAIL: ${{ inputs.send_test_email }}
+        run: |
+          args=()
+          if [ -n "$SEGMENT" ]; then args+=(--segment "$SEGMENT"); fi
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          if [ "$SEND_TEST_EMAIL" = "true" ]; then args+=(--send-test-email); fi
+          python -m argos_leads run "${args[@]}"
+
+      # Always runs (even after a failure) so HTTP/LLM caches and seen events persist.
+      - name: Commit lead database
+        if: always()
+        run: |
+          if [ ! -f data/argos.db ]; then echo "No database to commit."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/argos.db
+          if git diff --cached --quiet; then echo "Database unchanged."; exit 0; fi
+          git commit -m "chore: update lead database [skip ci]"
+          for attempt in 1 2 3; do
+            if git pull --rebase && git push; then exit 0; fi
+            echo "Push attempt $attempt failed; retrying."
+            sleep $((attempt * 10))
+          done
+          exit 1
+
+      - name: Email failure notice
+        if: failure()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python -m argos_leads notify-failure --message "${{ github.workflow }} run $RUN_URL failed"

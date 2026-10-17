@@ -1,0 +1,90 @@
+# Argos Lead Finder: what to search and how to score.
+# Edit freely; no code changes needed. Sources must come from SOURCES.md (v1 sets).
+# fetch_article: true = read the full article page (robots.txt permitting), not just the
+# feed headline/excerpt. Needed to find show dates in news posts.
+
+active_segments: [kpop, jpop]
+region: US
+
+segments:
+  kpop:
+    keywords: [K-pop, kpop, Korean pop, fan meeting, fanmeeting, fancon, showcase]
+    seed_agencies: [HYBE, Big Hit Music, BELIFT LAB, Pledis Entertainment, ADOR, Source Music, KOZ Entertainment,
+                    SM Entertainment, JYP Entertainment, YG Entertainment, Starship Entertainment, Cube Entertainment,
+                    KQ Entertainment, FNC Entertainment, Woollim Entertainment, The Black Label, P Nation,
+                    RBW, WM Entertainment, Fantagio, CJ ENM, Wake One]
+    artist_watchlist: []          # optional extra artist names to search on SeatGeek
+    sources:
+      - {slug: seatgeek_kpop, adapter: seatgeek, queries: [kpop, k-pop], genre_slug: k-pop}
+      - {slug: gdelt_news_kpop, adapter: gdelt, fetch_article: true,
+         query: '(kpop OR "k-pop") (tour OR concert OR "fan meeting") sourcecountry:US'}
+      - {slug: billboard_kpop_rss, adapter: rss, fetch_article: true, url: "https://www.billboard.com/t/k-pop/feed/",
+         include_terms: [tour, concert, dates, tickets, "on sale", showcase, "fan meeting"]}
+      - {slug: kpopofficial_events, adapter: wp_events, url: "https://kpopofficial.com/wp-json/wp/v2/event"}
+      - {slug: kpopconcerts_rss, adapter: rss, fetch_article: true, url: "https://kpopconcerts.com/feed/",
+         include_terms: ["[TOUR]", tour, "U.S.", USA, "North America", concert, "fan meeting", showcase]}
+      - {slug: pollstar_rss_kpop, adapter: rss, fetch_article: true, url: "https://news.pollstar.com/feed/", daily: true,
+         include_terms: [K-pop, kpop, Korean], include_watchlist: true}
+      - {slug: mamasgeeky_kpop_rss, adapter: rss, fetch_article: true, url: "https://mamasgeeky.com/category/kpop/feed/",
+         include_terms: [tour, showcase, fan meeting, fanmeet, fancon, expo, concert, tickets, "on sale", "North America", "U.S."]}
+
+  jpop:
+    keywords: [J-pop, jpop, Japanese pop, J-rock, anisong, anime concert, Japanese band]
+    seed_agencies: [Avex, Sony Music Entertainment Japan, Amuse, STARTO ENTERTAINMENT, Universal Music Japan,
+                    Pony Canyon, Lantis, Bandai Namco Music Live, Aniplex, LDH, Stardust Promotion,
+                    Victor Entertainment, King Records, LAPONE Entertainment, BMSG, HYBE Japan, Toy's Factory,
+                    A-Sketch]
+    artist_watchlist: [YOASOBI, XG, Ado, JO1, BABYMETAL, BAND-MAID, ONE OK ROCK, LiSA, Aimer, King Gnu,
+                       Kenshi Yonezu, Fujii Kaze, ATARASHII GAKKO!, Perfume, BE:FIRST, "&TEAM", Number_i,
+                       Hikaru Utada, Creepy Nuts, Vaundy, MAN WITH A MISSION, Hatsune Miku]
+    sources:
+      - {slug: seatgeek_jpop, adapter: seatgeek, queries: [jpop, j-pop], genre_slug: j-pop, include_watchlist: true}
+      - {slug: gdelt_news_jpop, adapter: gdelt, fetch_article: true,
+         query: '(jpop OR "j-pop" OR "japanese band" OR anisong) (tour OR concert) sourcecountry:US'}
+      - {slug: billboard_jpop_rss, adapter: rss, fetch_article: true, url: "https://www.billboard.com/t/j-pop/feed/",
+         include_terms: [tour, concert, dates, tickets, "on sale"]}
+      - {slug: ann_news_rss, adapter: rss, fetch_article: true, url: "https://www.animenewsnetwork.com/news/rss.xml?ann-edition=us", daily: true,
+         include_terms: [concert, tour, live, "North America", "U.S.", USA]}
+      - {slug: jrocknews_rss, adapter: rss, fetch_article: true, url: "https://jrocknews.com/feed",
+         include_terms: [tour, "North America", USA, "U.S.", concert]}
+      - {slug: pollstar_rss_jpop, adapter: rss, fetch_article: true, url: "https://news.pollstar.com/feed/", daily: true,
+         include_terms: [J-pop, jpop, Japanese, anime], include_watchlist: true}
+      - {slug: tokyonoizu_tours, adapter: tokyonoizu, url: "https://tokyonoizu.com/japanese-band-tours"}
+      - {slug: mamasgeeky_jpop_rss, adapter: rss, fetch_article: true, url: "https://mamasgeeky.com/category/jpop/feed/",
+         include_terms: [tour, showcase, fan meeting, concert, tickets, "on sale", "North America", "U.S."]}
+
+  # anime_conventions:            # example for future expansion (run Phase 1 research first)
+  #   keywords: [anime convention, anime con]
+  #   seed_agencies: []
+  #   sources:
+  #     - {slug: example_rss, adapter: rss, fetch_article: true, url: "https://example.com/feed/", include_terms: [tickets]}
+
+competitor_vendors: [Persona, Onfido, Jumio, Veriff, Sumsub, Socure, ID.me, Incode, AU10TIX, Stripe Identity, Clear]
+exclude_if_competitor: confirmed      # confirmed | likely | never
+# Sellers ARGOS already works with or has ruled out. Ticketmaster uses Persona; its
+# subsidiaries (Universe, TicketWeb, Front Gate Tickets) are excluded with it.
+exclude_sellers: [Ticketmaster, Universe, TicketWeb, Front Gate Tickets]
+
+scoring:
+  scalping_evidence: 3
+  on_sale_within_30_days: 2
+  per_intro_role_known: 1             # agency, promoter, organizer (each)
+  large_venue: 1                      # arena or stadium
+  large_venue_keywords: [Arena, Stadium, Coliseum, Dome, Garden, Forum, Field, Bowl]
+
+# Infrastructure settings (rarely changed)
+llm:
+  model: claude-opus-5-5
+  effort: low
+http:
+  contact_email: atharvra@andrew.cmu.edu    # sent in the User-Agent so site owners can reach us
+  default_min_interval_s: 1.0
+  host_min_interval_s: {api.gdeltproject.org: 6, news.pollstar.com: 10}
+caching:
+  competitor_recheck_days: 30
+  scalping_recheck_days: 90
+  lookup_stale_days: 180
+sheet:
+  spreadsheet_id_env: GOOGLE_SHEET_ID
+  leads_tab: Leads
+  outreach_tab: Outreach

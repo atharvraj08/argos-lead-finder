@@ -1,0 +1,6 @@
+recipients: [atharvra@andrew.cmu.edu]
+method: gmail_smtp                 # gmail_smtp | resend
+subject_prefix: "[Argos Lead Finder]"
+# Credentials come from environment variables, never this file:
+#   gmail_smtp: GMAIL_SENDER, GMAIL_APP_PASSWORD
+#   resend:     RESEND_API_KEY, RESEND_FROM

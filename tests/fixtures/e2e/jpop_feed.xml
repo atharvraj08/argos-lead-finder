@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>E2E J-pop News</title><link>https://news.example.com/jpop/</link><description>fixture</description>
+<item>
+  <title>YOASOBI announce North American tour</title>
+  <link>https://news.example.com/jpop/yoasobi-na-tour</link>
+  <guid>e2e-jpop-1</guid>
+  <pubDate>Thu, 15 Oct 2026 09:00:00 +0000</pubDate>
+  <description>YOASOBI (Sony Music Entertainment Japan) play Seattle's Climate Pledge Arena on Nov 28 and San Francisco on Nov 30.</description>
+</item>
+</channel></rss>
