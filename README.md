@@ -110,12 +110,21 @@ the sheet. A failed run sends a short failure notice to the same recipients.
   or two of items (Pollstar, Anime News Network), so the weekly run misses nothing.
 
 One-time GitHub setup:
-1. Push this folder to a **private** repo.
+1. Push this folder to a GitHub repo. Public is fine while it's a template (there are no
+   secrets in the code), but see the note below before running it for real.
 2. Add the secrets above.
 3. **Settings → Actions → General → Workflow permissions → Read and write permissions**
    (lets the workflow commit `data/argos.db`). If the default branch is protected, allow
    `github-actions[bot]` to push.
 4. Run **Weekly lead run** manually once with `dry_run` checked, then once without.
+5. Turn on the schedules: **Settings → Secrets and variables → Actions → Variables → New
+   repository variable** `ARGOS_ENABLED` = `true`. Until then, scheduled runs are skipped
+   (manual runs always work).
+
+**Public vs private:** the workflows commit `data/argos.db` (all leads, competitor findings
+and scalping notes) back to the repo. In a public repo anyone can download it. Make the repo
+private before real runs (**Settings → General → Danger Zone → Change visibility**), or share
+it with specific people as collaborators instead.
 
 ## Editing `config/targets.yaml`
 

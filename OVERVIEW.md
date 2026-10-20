@@ -66,7 +66,7 @@ Ties between leads with the same score go to the one whose tickets go on sale so
 
 ## How it runs on GitHub
 
-The tool runs on GitHub Actions inside a private GitHub repo, so no server or always-on
+The tool runs on GitHub Actions inside a GitHub repo, so no server or always-on
 computer is needed.
 
 - **Weekly run:** every Monday at 8 AM Eastern, adjusting for daylight saving time. It runs
@@ -82,12 +82,15 @@ computer is needed.
 
 Setup takes about 30 minutes, and the README has step-by-step instructions:
 
-1. Push the project folder to a private GitHub repo.
+1. Push the project folder to a GitHub repo. Public is fine for showing it; make it private
+   before real runs, because the saved database holds the lead list.
 2. Add six secrets in the repo settings: Anthropic API key, SeatGeek client ID, Google
    service account key, Google Sheet ID, Gmail sender address, Gmail app password.
 3. In Settings, then Actions, then General, set Workflow permissions to "Read and write" so
    the tool can save its database.
 4. Start "Weekly lead run" once by hand to check it works.
+5. Add the repo variable `ARGOS_ENABLED` = `true` to turn on the weekly and daily schedules.
+   Until then they stay off, so nothing runs before the keys are in place.
 
 ## Cost and limits
 

@@ -51,11 +51,12 @@ Weekly pipeline: `collect(all)` → per segment `discover` → `enrich` → `com
 
 - 2026-10-17 (user): exclude all Ticketmaster subsidiaries (Universe, TicketWeb, Front Gate Tickets) via `exclude_sellers`.
 - 2026-10-17 (user): news sources read the full article page (`fetch_article: true` on every RSS/GDELT source), still respecting robots.txt; falls back to feed fields when blocked.
-- 2026-10-17 (user): deliver as a template. Not run with real keys or pushed to GitHub yet; code is ready for both.
+- 2026-10-17 (user): deliver as a template. Not run with real keys yet.
+- 2026-10-20 (user): repo is public (github.com/atharvraj08/argos-lead-finder) to show the startup owner. Scheduled runs are off until repo variable `ARGOS_ENABLED=true`. Make private before real runs (committed DB holds leads).
 
 - Ticket seller is always the lead; agency/promoter/organizer are optional intro paths, never guessed.
 - Phase 2 agents use only the v1 sources in `SOURCES.md`; no new sources added during build.
-- SQLite is the source of truth; committed back to the private repo after each run.
+- SQLite is the source of truth; committed back to the repo after each run (repo should be private once real runs start).
 - Cron: Monday 08:00 America/New_York → `0 12 * * 1` UTC (EDT) / `0 13 * * 1` (EST). Plan: schedule both and gate on local hour in the job, so the run is always 8 AM ET.
 - LLM (Anthropic API) used only to extract fields from fetched page text.
 
@@ -77,4 +78,4 @@ Weekly pipeline: `collect(all)` → per segment `discover` → `enrich` → `com
 ## Next steps
 
 1. Add keys, run `python -m argos_leads run --dry-run` with LLM enabled.
-2. Push to private repo, add secrets, manual Actions run → rows in Leads tab + email received.
+2. Make repo private, add secrets, set `ARGOS_ENABLED=true`, manual Actions run → rows in Leads tab + email received.

@@ -61,7 +61,9 @@ jobs:
 
   run:
     needs: gate
-    if: needs.gate.outputs.run == 'true'
+    # Scheduled runs stay off until the repo variable ARGOS_ENABLED is "true"
+    # (set it once the secrets are added). Manual runs always work.
+    if: needs.gate.outputs.run == 'true' && (github.event_name != 'schedule' || vars.ARGOS_ENABLED == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:

@@ -17,6 +17,8 @@ concurrency:
 
 jobs:
   collect:
+    # Scheduled runs stay off until the repo variable ARGOS_ENABLED is "true".
+    if: github.event_name != 'schedule' || vars.ARGOS_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
