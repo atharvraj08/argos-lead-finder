@@ -6,7 +6,7 @@ Every Monday, Argos Lead Finder finds newly announced U.S. K-pop and J-pop event
 ticket seller for each one as a sales lead for ARGOS, and adds the scored leads to a Google
 Sheet. It is a working template: built and tested, not yet running with real keys.
 
-## What it does
+## What it does..
 
 The tool runs the same six steps every week over a fixed list of 15 vetted sources. It does
 not research new sources or change its own rules.
@@ -20,8 +20,8 @@ not research new sources or change its own rules.
 3. **Check for competitors.** It looks for signs that the seller already uses Persona,
    Onfido, Jumio or another ID-verification vendor: code on the seller's website, their
    privacy policy, and press releases. Each seller is marked confirmed, likely or unknown,
-   with a link to the evidence.
-4. **Look for scalping history.** It searches for past scalping, bot or resale-price
+   with a link to the evidence.  Ex: Ticketmaster using Persona
+4. **Look for scalping history.** searches for past scalping, bot or resale-price
    problems for the artist or seller, and saves a one-line summary with its link.
 5. **Score the lead** with the points system below.
 6. **Add new rows to the Google Sheet** and email a summary.
@@ -93,9 +93,9 @@ Setup takes about 30 minutes, and the README has step-by-step instructions:
 
 ## Keys and email
 
-The tool needs six keys, which work like passwords that let it use other services. They are
+The tool needs six keys. They are
 saved in the GitHub repo under Settings, then Secrets and variables, then Actions. Once saved
-there nobody can read them back, and they never go in the project files.
+there nobody can read them back, even in private repo that you can make later. 
 
 | # | Key | What it does, in plain words | Where it comes from | Cost |
 | --- | --- | --- | --- | --- |
@@ -113,13 +113,6 @@ listed in the file `config/email.yaml`, currently:
 recipients: [atharvra@andrew.cmu.edu]
 ```
 
-To add people, such as the owner or teammates, add their addresses separated by commas:
-
-```yaml
-recipients: [atharvra@andrew.cmu.edu, teammate@example.com]
-```
-
-The next run sends to everyone on the list, and failure notices go to the same people.
 
 ## Cost and limits
 
@@ -127,7 +120,7 @@ The only paid part is the Anthropic API, which reads articles and runs the scalp
 competitor searches. Every event source is free, and GitHub Actions is free for this amount
 of use on most plans.
 
-What it can miss:
+What it can potentially miss and limitations to potentially fix later on in this tool:
 
 - **Some sellers will be blank or uncertain.** This happens when a show has no ticket link
   yet, or the link points to the band's own website. Uncertain sellers are flagged in the
