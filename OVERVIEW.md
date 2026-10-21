@@ -84,13 +84,42 @@ Setup takes about 30 minutes, and the README has step-by-step instructions:
 
 1. Push the project folder to a GitHub repo. Public is fine for showing it; make it private
    before real runs, because the saved database holds the lead list.
-2. Add six secrets in the repo settings: Anthropic API key, SeatGeek client ID, Google
-   service account key, Google Sheet ID, Gmail sender address, Gmail app password.
+2. Add the six keys described below in the repo settings.
 3. In Settings, then Actions, then General, set Workflow permissions to "Read and write" so
    the tool can save its database.
 4. Start "Weekly lead run" once by hand to check it works.
 5. Add the repo variable `ARGOS_ENABLED` = `true` to turn on the weekly and daily schedules.
    Until then they stay off, so nothing runs before the keys are in place.
+
+## Keys and email
+
+The tool needs six keys, which work like passwords that let it use other services. They are
+saved in the GitHub repo under Settings, then Secrets and variables, then Actions. Once saved
+there nobody can read them back, and they never go in the project files.
+
+| # | Key | What it does, in plain words | Where it comes from | Cost |
+| --- | --- | --- | --- | --- |
+| 1 | Anthropic API key | Lets the tool use an AI to read news articles, pull out show details, and search for scalping and competitor evidence. Without it, scores stay at 0 | console.anthropic.com | Paid, per use |
+| 2 | SeatGeek client ID | Lets the tool get SeatGeek's list of upcoming K-pop and J-pop shows. Without it, SeatGeek is skipped | seatgeek.com/account/develop | Free |
+| 3 | Google service account key | The login for a "robot" Google account that adds rows to the sheet. The sheet must be shared with the robot's email address as an editor | Google Cloud Console | Free |
+| 4 | Google Sheet ID | Tells the robot which spreadsheet to write to. It's the long code in the sheet's link | The sheet's link | Free |
+| 5 | Gmail sender address | The Gmail account the weekly email is sent **from**. A separate account just for this is best | Any Gmail account | Free |
+| 6 | Gmail app password | A special 16-character password that only lets the tool **send** email from that account. It's not the account's normal password. It can't read the inbox or change settings, and it can be cancelled anytime | myaccount.google.com/apppasswords (2-Step Verification must be on) | Free |
+
+**Who gets the email.** The sender (key 5) and the recipients are separate. Recipients are
+listed in the file `config/email.yaml`, currently:
+
+```yaml
+recipients: [atharvra@andrew.cmu.edu]
+```
+
+To add people, such as the owner or teammates, add their addresses separated by commas:
+
+```yaml
+recipients: [atharvra@andrew.cmu.edu, teammate@example.com]
+```
+
+The next run sends to everyone on the list, and failure notices go to the same people.
 
 ## Cost and limits
 

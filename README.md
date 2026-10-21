@@ -49,16 +49,19 @@ enrichment can only use structured data (the run logs a warning). Without
 Add these in GitHub under **Settings → Secrets and variables → Actions**. For local runs,
 put them in `.env` (see `.env.example`).
 
-| Secret | Needed for |
-|---|---|
-| `ANTHROPIC_API_KEY` | Extracting fields from page text, scalping and competitor searches |
-| `SEATGEEK_CLIENT_ID` | SeatGeek event sources (free: seatgeek.com/account/develop) |
-| `GOOGLE_SERVICE_ACCOUNT_JSON` | Google Sheets: the full JSON key of the service account (locally you can use `GOOGLE_APPLICATION_CREDENTIALS=/path/key.json` instead) |
-| `GOOGLE_SHEET_ID` | The spreadsheet id: the long string in the sheet URL between `/d/` and `/edit` |
-| `GMAIL_SENDER`, `GMAIL_APP_PASSWORD` | Email via Gmail SMTP |
-| `RESEND_API_KEY`, `RESEND_FROM` | Email via Resend (alternative to Gmail) |
+| # | Secret | What it does, in plain words | Where to get it | Cost |
+|---|---|---|---|---|
+| 1 | `ANTHROPIC_API_KEY` | Lets the tool use an AI model to read articles and pull out event details, and to search the web for scalping history and competitor use. Without it, news sources find nothing and every score is 0 | console.anthropic.com → API Keys | Paid, per use |
+| 2 | `SEATGEEK_CLIENT_ID` | Lets the tool ask SeatGeek for its list of upcoming K-pop and J-pop events. Without it, SeatGeek is skipped and everything else still runs | seatgeek.com/account/develop | Free |
+| 3 | `GOOGLE_SERVICE_ACCOUNT_JSON` | The login for a "robot" Google account that adds rows to your Google Sheet. Paste the whole downloaded JSON key file. Locally you can use `GOOGLE_APPLICATION_CREDENTIALS=/path/key.json` instead | Google Cloud Console (steps below) | Free |
+| 4 | `GOOGLE_SHEET_ID` | Tells the robot account which spreadsheet to write to: the long string in the sheet URL between `/d/` and `/edit` | The sheet's link | Free |
+| 5 | `GMAIL_SENDER` | The Gmail address the weekly email is sent **from** | Any Gmail account; a dedicated one is best | Free |
+| 6 | `GMAIL_APP_PASSWORD` | A 16-character app password that lets the tool **send** email from that Gmail. It is not the account's normal password, and it can't read the inbox or change settings | myaccount.google.com/apppasswords (steps below) | Free |
+| alt | `RESEND_API_KEY`, `RESEND_FROM` | Use instead of 5 and 6 if you send through Resend rather than Gmail | resend.com | Free tier |
 
-Only the pair for the email method chosen in `config/email.yaml` is required.
+Only the pair for the email method chosen in `config/email.yaml` is required. Secrets
+saved in GitHub can't be read back by anyone, including you; to change one, overwrite it.
+Never put a key in a file in the repo.
 
 ## Google service account (one time)
 
@@ -87,9 +90,27 @@ recipients: [atharvra@andrew.cmu.edu]
 method: gmail_smtp          # gmail_smtp | resend
 ```
 
-**Gmail SMTP:** use a sender Gmail account with 2-Step Verification on. Create an app
-password at myaccount.google.com/apppasswords. Set `GMAIL_SENDER` (the address) and
-`GMAIL_APP_PASSWORD` (the 16-character password).
+**Recipients (who gets the email):** the `recipients` list is who the email goes **to**. It is
+separate from the sender account. To add people, list their addresses separated by commas:
+
+```yaml
+recipients: [atharvra@andrew.cmu.edu, teammate@example.com]
+```
+
+Commit the change; the next run uses the new list. Failure notices go to the same list.
+
+**Gmail SMTP (the sender):**
+1. Pick the Gmail account the email will come **from**. A dedicated account (not a personal
+   one) is best.
+2. Turn on 2-Step Verification for it at myaccount.google.com/security.
+3. Go to myaccount.google.com/apppasswords, enter a name such as "Argos Lead Finder" and
+   click Create. Google shows a 16-character code.
+4. Save the address as `GMAIL_SENDER` and the 16-character code as `GMAIL_APP_PASSWORD`.
+
+Gmail rejects the account's normal password from tools like this, which is why the app
+password is needed. It only allows sending; it can't read the inbox or change the account,
+and you can revoke it anytime from the same page. Sent emails appear in that account's
+"Sent" folder.
 
 **Resend:** create an API key at resend.com and verify a sending domain. Set
 `RESEND_API_KEY` and `RESEND_FROM` (e.g. `Argos Leads <leads@yourdomain.com>`), then set
